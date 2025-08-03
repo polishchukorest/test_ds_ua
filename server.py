@@ -5,8 +5,8 @@ PORT = 8000
 
 async def process_trade(websocket):
     async for message in websocket:
-        trade = await websocket.recv()
-        print(f'trade:{trade}')
+        print(f'trade:{message}')
+        await websocket.send(message)
 
 async def main():
 
