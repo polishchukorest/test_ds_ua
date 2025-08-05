@@ -2,6 +2,9 @@ import asyncio
 import websockets
 import logging
 from datetime import datetime
+import os
+
+os.makedirs("logs", exist_ok=True)
 
 logging.basicConfig(
     filename="logs/server.log",

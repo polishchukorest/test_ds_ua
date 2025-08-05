@@ -4,6 +4,9 @@ import websockets
 import json
 import logging
 from datetime import datetime
+import os 
+
+os.makedirs("logs", exist_ok=True)
 
 logging.basicConfig(
     filename="logs/emulator.log",
