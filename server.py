@@ -1,11 +1,23 @@
 import asyncio
 import websockets
-import json
+import logging
+import os
 import pandas as pd
+import json
 
+os.makedirs("logs", exist_ok=True)
+
+logging.basicConfig(
+    filename="logs/server.log",
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 PORT = 8000
 
 async def process_trade(websocket):
+    print("server running")
+    
     df = pd.read_parquet("trades_sample.parquet")
     df.sort_values('timestamp', inplace=True)
 
@@ -14,30 +26,20 @@ async def process_trade(websocket):
         trades['timestamp'] = trades['timestamp'].dt.strftime('%Y-%m-%d %X')
         trades = trades.to_dict('records')
         print(trades)
-        #print(trades)
-        message = {
-            "trades": trades
-        }
-        #print(message)
         await asyncio.gather(
             *[websocket.send(json.dumps(trade)) for trade in trades]
         )
-        #await websocket.send(trades)
-        #await websocket.send(json.dumps(message))
-        time_to_wait = (timestamp - last_time).microseconds/(10**6)
+        logger.info(f"sent trades: {trades}")
+        time_to_wait = (timestamp - last_time).total_seconds()
         await asyncio.sleep(time_to_wait)
+        logger.info(f'time to wait diff: {time_to_wait}')
         last_time = timestamp
-        print(f'time to wait diff: {time_to_wait}')
-        print(f"sent trades: {message}")
-
 
 async def main():
 
     async with websockets.serve(process_trade, "localhost", PORT):
-        await asyncio.Future()  # Run forever
+        await asyncio.Future() 
 
 if __name__ == "__main__":
-    #df = pd.read_parquet("trades_sample.parquet")
-    #df.sort_values('timestamp', inplace=True)
     asyncio.run(main())
 
