@@ -24,3 +24,8 @@ Before running the code install requirements.txt, Please run three separate term
 * python client.py
 * python emulator.py
 
+## For alternative approach:
+* python server.py
+* python client.py
+
+
